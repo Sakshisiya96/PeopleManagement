@@ -1,0 +1,20 @@
+﻿@if (ViewBag.CurrentSortBy == ViewBag.ColumnName && ViewBag.CurrentSortOrder == SeacrhOrderOption.ASC.ToString())
+{
+	<th>
+		<a href="~/persons/index?searchBy=@ViewBag.CurrentSearchBy&searchString=@ViewBag.CurrentSearchString&sortBy=ViewBag.ColumnName&sortOrder=@nameof(SeacrhOrderOption.DESC)">@ViewBag.DisplayName</a>
+		<i class="fa-solid fa-sort-up"></i>
+	</th>
+}
+else if (ViewBag.CurrentSortBy == nameof(PersonResponse.PersonName) && ViewBag.CurrentSortOrder == SeacrhOrderOption.DESC.ToString())
+{
+	<th>
+		<a href="~/persons/index?searchBy=@ViewBag.CurrentSearchBy&searchString=@ViewBag.CurrentSearchString&sortBy=@ViewBag.ColumnName&sortOrder=@nameof(SeacrhOrderOption.ASC)">@ViewBag.DisplayName</a>
+		<i class="fa-solid fa-sort-down"></i>
+	</th>
+}
+else
+{
+	<th>
+		<a href="~/persons/index?searchBy=@ViewBag.CurrentSearchBy&searchString=@ViewBag.CurrentSearchString&sortBy=@ViewBag.ColumnName&sortOrder=@nameof(SeacrhOrderOption.ASC)">@ViewBag.DisplayName</a>
+	</th>
+}
