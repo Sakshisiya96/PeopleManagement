@@ -26,7 +26,6 @@ namespace CrudTest
     public class PersonServiceTest
     {
         private readonly IPersonService _personService;
-        private readonly ICountriesService _countriesService;
         private readonly ITestOutputHelper _testOutputHelper;
         private readonly IFixture _fixture;//parent interface of AutoFixture, which is used to create test data
         //It Represnt the mocked object that was created by Mock<T>
@@ -37,15 +36,7 @@ namespace CrudTest
         {
             _fixture = new Fixture();
             _personRepositoryMock = new Mock<IPersonRepository>();
-            _personReposiroty = _personRepositoryMock.Object;
-
-            var counrtiesInitialData = new List<Country>() { };
-            var personsInitialData = new List<Person>() { };
-            DbContextMock<ApplicationDbContext> dbContextMock = new DbContextMock<ApplicationDbContext>(new DbContextOptionsBuilder<ApplicationDbContext>().Options);//default dbcontext option create
-            ApplicationDbContext dbContext = dbContextMock.Object;
-            dbContextMock.CreateDbSetMock(temp => temp.Countries, counrtiesInitialData);
-            dbContextMock.CreateDbSetMock(temp => temp.Persons, personsInitialData);
-            _countriesService = new CountriesServiceM(null);
+            _personReposiroty = _personRepositoryMock.Object;    
             _personService = new PersonService(_personReposiroty);
             _testOutputHelper = testOutputHelper;
         }
@@ -288,7 +279,7 @@ namespace CrudTest
 
         #region UpdatePerson
         [Fact]
-        public async Task UpdatePerson_null()
+        public async Task UpdatePerson_null_ToBeArgumnetNullException()
         {
             //Arrange
             PersonUpdateRequest? personUpdateRequest = null;
@@ -299,7 +290,7 @@ namespace CrudTest
             });
         }
         [Fact]
-        public async Task UpdatePerson_PersonIdInvalid()
+        public async Task UpdatePerson_PersonIdInvalid_ToBeArumentException()
         {
             PersonUpdateRequest personUpdateRequest = new PersonUpdateRequest()
             {
@@ -312,72 +303,80 @@ namespace CrudTest
 
         }
         [Fact]
-        public async Task UpdatePerson_PersonNameInvalid()
+        public async Task UpdatePerson_PersonNameInvalid_ArgumentException()
         {
-            CountryAddRequest countryAddRequest = _fixture.Create<CountryAddRequest>();
-            //generating the countryid
-            CountryResponse personResponse = await _countriesService.AddCountry(countryAddRequest);
-            //addign inside the personaddrequest
+           
 
-            PersonAddRequest personreq = _fixture.Build<PersonAddRequest>()
+            Person person = _fixture.Build<Person>()
+                .With(temp=>temp.PersonName,null as string)
                 .With(temp => temp.Email, "sakshi@gmai.com")
+                .With(temp=>temp.Country,null as Country)
+                .With(temp=>temp.Gender,"Male")
                 .Create();
-            PersonResponse pr = await _personService.AddPerson(personreq);
-            //in person response we have person request
-            PersonUpdateRequest pur = pr.ToPersonUpdateRequest();
-            pur.PersonName = null;
+            PersonResponse person_response_from_add = person.ToPersonResponse();
+            PersonUpdateRequest person_update_request = person_response_from_add.ToPersonUpdateRequest();
+            
             await Assert.ThrowsAsync<ArgumentException>(async () =>
             {
-                await _personService.UpdatePerson(pur);
+                await _personService.UpdatePerson(person_update_request);
             });
+
         }
         //add new person and update the same
         [Fact]
         public async Task UpdatePerson_ValidPersonRequest()
         {
-            CountryAddRequest countryAddRequest = _fixture.Create<CountryAddRequest>();
-            //generating the countryid
-            CountryResponse personResponse = await _countriesService.AddCountry(countryAddRequest);
-            //addign inside the personaddrequest
 
-            PersonAddRequest personreq = _fixture.Build<PersonAddRequest>()
+            Person person_add_Req = _fixture.Build<Person>()
                 .With(temp => temp.PersonName, "Mish")
                 .With(temp => temp.Email, "mis@gmail.com")
-                .With(temp => temp.CountryId, personResponse.CountryId)
+                .With(temp => temp.Country, null as Country)
+                .With(temp => temp.Gender, "Male")
                 .Create();
-            PersonResponse pr = await _personService.AddPerson(personreq);
-            //in person response we have person request
-            PersonUpdateRequest pur = pr.ToPersonUpdateRequest();
-            pur.PersonName = "Mish";
-            pur.Email = "mis@gma";
+            PersonResponse person_response_expecated = person_add_Req.ToPersonResponse();
 
-            PersonResponse personresponse = await _personService.UpdatePerson(pur);
+            PersonUpdateRequest person_update_request = person_response_expecated.ToPersonUpdateRequest();
+            _personRepositoryMock.Setup(temp => temp.UpdatePerson(It.IsAny<Person>())).ReturnsAsync(person_add_Req);
+            _personRepositoryMock.Setup(temp => temp.GetPersonByPersonId(It.IsAny<Guid>())).ReturnsAsync(person_add_Req);
 
-            PersonResponse call = await _personService.GetPersonByPersonId(personresponse.PersonId);
-            Assert.Equal(call, personresponse);
+
+            PersonResponse personresponse_from_update = await _personService.UpdatePerson(person_update_request);
+
+            //Assert
+            personresponse_from_update.Should().Be(person_response_expecated);
 
         }
 
         #endregion
         #region Delete Region
         [Fact]
-        public async Task DeletePerson_ValidPersonId()
+        public async Task DeletePerson_ValidPersonId_TOBeSuccess()
         {
-            CountryAddRequest countryAddRequest = _fixture.Create<CountryAddRequest>();
-            CountryResponse country = await _countriesService.AddCountry(countryAddRequest);
-            PersonAddRequest personreq = _fixture.Build<PersonAddRequest>()
+            Person personreq = _fixture.Build<Person>()
                 .With(temp => temp.PersonName, "Mish")
                 .With(temp => temp.Email, "mis@gmail.com")
-                .With(temp => temp.CountryId, country.CountryId)
+                .With(temp => temp.Country, null as Country)
+                .With(temp => temp.Gender, "Male")
                 .Create();
-            PersonResponse personresponse = await _personService.AddPerson(personreq);
-            bool is_deleted = await _personService.DeletePerson(personresponse.PersonId);
+            
+            _personRepositoryMock.Setup(temp=>temp.DeletePersonByPersonId(It.IsAny<Guid>())).ReturnsAsync(true);
+            _personRepositoryMock.Setup(temp=>temp.GetPersonByPersonId(It.IsAny<Guid>())).ReturnsAsync(personreq);
+            bool is_deleted = await _personService.DeletePerson(personreq.PersonId);
             Assert.True(is_deleted);
 
         }
         [Fact]
         public async Task DeletePerson_InValidPersonId()
         {
+            Person personreq = _fixture.Build<Person>()
+               .With(temp => temp.PersonName, "Mish")
+               .With(temp => temp.Email, "mis@gmail.com")
+               .With(temp => temp.Country, null as Country)
+               .With(temp => temp.Gender, "Male")
+               .Create();
+         
+            _personRepositoryMock.Setup(temp => temp.DeletePersonByPersonId(It.IsAny<Guid>())).ReturnsAsync(true);
+
             bool isDeleted = await _personService.DeletePerson(Guid.NewGuid());
             Assert.False(isDeleted);
 

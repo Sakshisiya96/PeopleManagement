@@ -2,6 +2,7 @@
 using Entity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.SqlServer.Query.Internal;
+using Microsoft.Extensions.Logging;
 using RepositoryContract;
 using System;
 using System.Collections.Generic;
@@ -15,9 +16,11 @@ namespace Repository
     public class PersonRepository : IPersonRepository
     {
         private readonly ApplicationDbContext _db; 
-        public PersonRepository(ApplicationDbContext db)
+        private readonly ILogger _logger;
+        public PersonRepository(ApplicationDbContext db,ILogger<PersonRepository> logger)
         {
             _db = db;
+            _logger= logger;
         }
         public async Task<Person> AddPersons(Person person)
         {
@@ -40,6 +43,7 @@ namespace Repository
 
         public async Task<List<Person>> GetFilteredPerson(Expression<Func<Person, bool>> predicate)
         {
+            _logger.LogInformation("GetFilteredPerson of Person Respoistory");
             return await _db.Persons.Include("Country").Where(predicate).ToListAsync();
         }
 

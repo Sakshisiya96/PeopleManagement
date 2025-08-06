@@ -27,9 +27,10 @@ namespace CountriesService
         private readonly IPersonRepository _personsRespository;
       
         private readonly ILogger<PersonService> _logger;
-        public PersonService(IPersonRepository personRepostory)
+        public PersonService(IPersonRepository personRepostory,ILogger<PersonService> logger)
         {
             _personsRespository = personRepostory;
+            _logger = logger;
            
       
         }
@@ -65,7 +66,7 @@ namespace CountriesService
 
         public async Task<List<PersonResponse>> GetAllPersons()
         {
-
+            _logger.LogInformation("GetAllPersons of Persons Service");
             var person = await _personsRespository.GetAllPersons();
             return  person //select * from persons
                 .Select(temp => temp.ToPersonResponse()).ToList();//list of person return
@@ -90,7 +91,7 @@ namespace CountriesService
 
         public async Task<List<PersonResponse>> GetFilteredPerson(string searchBy, string? seacrhString)
         {
-
+            _logger.LogInformation("GetFilteredPerson of PersonService");
             List<Person> persons = searchBy switch {
                 nameof(PersonResponse.PersonName) =>
                 await _personsRespository.GetFilteredPerson(x =>
@@ -133,7 +134,7 @@ namespace CountriesService
         /// <exception cref="NotImplementedException"></exception>
         public async Task<List<PersonResponse>> GetSortedPersons(List<PersonResponse> allPersons, string sortBy, SeacrhOrderOption SortOrder)
         {
- 
+            _logger.LogInformation("GetSortedPerson of Person Service");
             if (string.IsNullOrEmpty(sortBy))
                 return allPersons;
             List<PersonResponse> sortedPerson = (sortBy, SortOrder)

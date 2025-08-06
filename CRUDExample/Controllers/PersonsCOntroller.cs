@@ -18,13 +18,13 @@ namespace CRUDExample.Controllers
         {
             _personService = personService;
             _countriesService = countriesService;
-            _logger = logger;
+            _logger= logger;
         }
         [Route("index")]
         [Route("/")]
         public async Task<IActionResult> Index(string searchBy, string? searchString, string sortBy = nameof(PersonResponse.PersonName), SeacrhOrderOption sortOrder = SeacrhOrderOption.ASC)
         {
-            _logger.LogInformation("Index Action methof of PersonsCOntroller");
+            _logger.LogInformation("Index Action method of PersonsCOntroller");
             _logger.LogDebug($"searchBy:{searchBy},searchString:{searchString},sortBy:{sortBy},sortOrder:{sortOrder}");
             ViewBag.SearchFields = new Dictionary<string, string>()
             {

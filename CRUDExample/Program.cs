@@ -1,21 +1,26 @@
-using ServiceContract;
 using CountriesService;
-using Microsoft.EntityFrameworkCore;
-using Entity;
-using System;
 using Entities;
-using RepositoryContract;
+using Entity;
+using Microsoft.AspNetCore.HttpLogging;
+using Microsoft.EntityFrameworkCore;
 using Repository;
+using RepositoryContract;
+using ServiceContract;
+using System;
+using Serilog;
 var builder = WebApplication.CreateBuilder(args);
-
-//logging
-builder.Host.ConfigureLogging(loggingProvider =>
+builder.Services.AddHttpLogging(options =>
 {
-    loggingProvider.ClearProviders();
-    loggingProvider.AddConsole();
-    loggingProvider.AddDebug();
-    loggingProvider.AddEventLog();
+    options.LoggingFields = HttpLoggingFields.All;
+    // or tailor to Request, Response, Headers, etc.
 });
+builder.Host.UseSerilog((HostBuilderContext context,IServiceProvider services,LoggerConfiguration loggerConfiguration) =>
+{
+    loggerConfiguration.ReadFrom.Configuration(context.Configuration).//reading the cofiguration from appsetting.json
+    ReadFrom.Services(services);//read the current apps services and make them avaialble to serilog
+});
+builder.Services.AddHttpLogging(options => options.LoggingFields = Microsoft.AspNetCore.HttpLogging.HttpLoggingFields.RequestProperties
+| Microsoft.AspNetCore.HttpLogging.HttpLoggingFields.RequestProperties);
 builder.Services.AddControllersWithViews();
 
 //Add services inside the Ioc Containers
@@ -27,6 +32,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options => {
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));//scoped service
 });
 var app = builder.Build();
+app.UseHttpLogging();
 //app.Logger.LogDebug("debug-message");
 //app.Logger.LogInformation("debug-message");
 //app.Logger.LogWarning("debug-message");
