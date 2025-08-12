@@ -2,10 +2,23 @@
 @{
 	ViewBag.Title = "Delete Person";
 }
-<a asp-controller="Persons" asp-action="Index" class="link-hover">Back to Persons List</a>
-<h2>Delete Persons</h2>
-<h2>Are you sure you want to Delete this person?</h2>
-<div class="center-box">
+<div class="flex">
+	<div class="flex-1">
+		<div class="text-grey">
+			<span>Contacts</span>
+			<i class="fa-solid fa-caret-right"></i>
+			<span class="text-grey">Persons</span>
+			<i class="fa-solid fa-caret-right"></i>
+			<span class="text-grey">Delete</span>
+		</div>
+	</div>
+</div>
+<!-- breadcrum end-->
+
+<div class="form-container>
+	<a asp-controller="Persons" asp-action="Index" class="link-hover">Back to Persons List</a>
+	<h2 class="text-large">Delete Persons</h2>
+	<h2 class="text-large">Are you sure you want to Delete this person?</h2>
 	<form asp-controller="Persons" asp-action="Delete" method="post">
 		<input type="hidden" asp-for="PersonId" />
 		@*PersonName*@

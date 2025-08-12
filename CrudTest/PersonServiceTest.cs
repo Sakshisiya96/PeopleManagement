@@ -20,6 +20,8 @@ using FluentAssertions;
 using RepositoryContract;
 using Moq;
 using System.Linq.Expressions;
+using Castle.Core.Logging;
+using Microsoft.Extensions.Logging;
 
 namespace CrudTest
 {
@@ -32,12 +34,17 @@ namespace CrudTest
         private readonly IPersonRepository _personReposiroty;
         //Used to mock the methods of IPersonRepository
         private readonly Mock<IPersonRepository> _personRepositoryMock;
+        private readonly ILogger<PersonService> _logger;
+        private readonly Mock<ILogger<PersonService>> _loggerMock;
+
         public PersonServiceTest(ITestOutputHelper testOutputHelper)
         {
             _fixture = new Fixture();
+            _loggerMock= new Mock<ILogger<PersonService>>();
+            _logger = _loggerMock.Object;
             _personRepositoryMock = new Mock<IPersonRepository>();
             _personReposiroty = _personRepositoryMock.Object;    
-            _personService = new PersonService(_personReposiroty);
+            _personService = new PersonService(_personReposiroty, _logger);
             _testOutputHelper = testOutputHelper;
         }
         [Fact]

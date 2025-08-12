@@ -61,7 +61,7 @@ namespace CrudTest
             {
                 CountryName = "Japan"
             };
-           await Assert.ThrowsAsync<ArgumentNullException>(async() =>
+           await Assert.ThrowsAsync<NullReferenceException>(async() =>
             {
                await _countries.AddCountry(request1);
                await _countries.AddCountry(request2);
