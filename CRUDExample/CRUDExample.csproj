@@ -21,6 +21,7 @@
   <ItemGroup>
     <ProjectReference Include="..\CountriesService\CountriesService.csproj" />
     <ProjectReference Include="..\Entity\Entity.csproj" />
+    <ProjectReference Include="..\Exceptions\Exceptions.csproj" />
     <ProjectReference Include="..\RepositoryContract\RepositoryContract.csproj" />
     <ProjectReference Include="..\Repository\Repository.csproj" />
     <ProjectReference Include="..\ServiceContract\ServiceContract.csproj" />

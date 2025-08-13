@@ -17,7 +17,7 @@ namespace CRUDExample.Controllers
     // [Route("persons")]
     [Route("[controller]")]
     [TypeFilter(typeof(ResponseActiomFilter), Arguments = new object[] { "X-Key-From-Controller", "My-Value-From-Controller" ,3},Order=3)]
-    [TypeFilter(typeof(HandleExceptionFilter))]
+    //[TypeFilter(typeof(HandleExceptionFilter))]
     public class PersonsController : Controller
     {
         private readonly IPersonService _personService;

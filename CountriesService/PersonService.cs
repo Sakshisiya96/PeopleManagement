@@ -1,24 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using CsvHelper;
+﻿using CsvHelper;
+using CsvHelper.Configuration;
 using Entities;
 using Entity;
+using Exceptions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using OfficeOpenXml;
+using RepositoryContract;
 using ServiceContract;
 using ServiceContract.DTO;
 using ServiceContract.Enums;
 using ServiceContract.Helper;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 using System.IO;
-using CsvHelper.Configuration;
-using OfficeOpenXml;
-using Microsoft.Extensions.Logging;
-using RepositoryContract;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace CountriesService
 {
@@ -215,7 +216,7 @@ namespace CountriesService
             Person? matchingPerson = await _personsRespository.GetPersonByPersonId(request.PersonId);
             if (matchingPerson == null)
             {
-                throw new ArgumentException("Given person id is not exists");
+                throw new InvalidPersonIdException("Given person id is not exists");
             }
             matchingPerson.PersonName = request.PersonName;
             matchingPerson.Gender = request.Gender.ToString();

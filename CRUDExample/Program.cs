@@ -1,5 +1,6 @@
 using CountriesService;
 using CRUDExample.Filters.ActionFilters;
+using CRUDExample.Middleware;
 using CRUDExample.StartupExtension;
 using Entities;
 using Entity;
@@ -27,7 +28,16 @@ builder.Services.ConfigureServices(builder.Configuration);
 
 
 var app = builder.Build();
-app.UseHttpLogging();
+if (builder.Environment.IsDevelopment())
+{
+    app.UseDeveloperExceptionPage();
+}
+else
+{
+    app.UseExceptionHandler("/Error");
+    app.UseExceptionHandlingMiddleware();
+}
+    app.UseHttpLogging();
 Rotativa.AspNetCore.RotativaConfiguration.Setup("wwwroot", wkhtmltopdfRelativePath: "Rotativa");
 app.UseStaticFiles();
 app.UseRouting();
