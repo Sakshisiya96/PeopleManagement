@@ -69,7 +69,7 @@ namespace CRUDExample.Controllers
         [Route("create")]
         [HttpPost]
         [TypeFilter(typeof(PersonsCreateAndExistPostActioFilter))]
-        [TypeFilter(typeof(FeatureDisabledResourceFiltercs))]
+       //[TypeFilter(typeof(FeatureDisabledResourceFiltercs))]
         public async Task<IActionResult> Create(PersonAddRequest personRequest)
         {
             PersonResponse peronseResponse = await _personAdderService.AddPerson(personRequest);
@@ -153,7 +153,7 @@ namespace CRUDExample.Controllers
                 return RedirectToAction("Index");
             }
 
-            _personDeleteService.DeletePerson(personReq.PersonId);
+            await _personDeleteService.DeletePerson(personReq.PersonId);//without await it will redirect to the same code
             return RedirectToAction("Index");
 
         }

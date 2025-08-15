@@ -35,7 +35,6 @@ namespace Repository
             int rowsCount = await _db.SaveChangesAsync();
             return rowsCount > 0;
         }
-
         public async Task<List<Person>> GetAllPersons()
         {
             return await _db.Persons.Include("Country").ToListAsync();

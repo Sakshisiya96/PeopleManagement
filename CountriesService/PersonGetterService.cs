@@ -74,9 +74,20 @@ namespace CountriesService
                 await _personsRespository.GetFilteredPerson(x =>
                 x.Email.Contains(seacrhString)),
 
-                nameof(PersonResponse.DateOfBirth) =>
-                await _personsRespository.GetFilteredPerson(x =>
-                x.DateOfBirth.Value.ToString("dd MMMM yyyy").Contains(seacrhString)),
+                nameof(PersonResponse.DateOfBirth)=>
+                await _personsRespository.GetFilteredPerson(x=>x.DateOfBirth.HasValue &&
+                (
+                x.DateOfBirth.Value.Year.ToString().Contains(seacrhString)||
+                x.DateOfBirth.Value.Month.ToString().Contains(seacrhString)||
+                x.DateOfBirth.Value.Day.ToString().Contains(seacrhString)
+                )
+                ),
+
+                nameof(PersonResponse.Age) =>
+                    await _personsRespository.GetFilteredPerson(x =>
+                        x.DateOfBirth.HasValue &&
+                        ((int)((DateTime.Now - x.DateOfBirth.Value).TotalDays / 365.25)).ToString().Contains(seacrhString)
+                    ),
 
                 nameof(PersonResponse.Gender) =>
                 await _personsRespository.GetFilteredPerson(x =>
