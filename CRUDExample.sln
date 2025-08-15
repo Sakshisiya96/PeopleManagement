@@ -11,7 +11,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Entity", "Entity\Entity.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServiceContract", "ServiceContract\ServiceContract.csproj", "{0A8E6661-5E2E-48BA-8F48-28C154CDFD4E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CountriesService", "CountriesService\CountriesService.csproj", "{10428DEC-A247-4B10-A35A-EDB3404C6F81}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Services", "CountriesService\Services.csproj", "{10428DEC-A247-4B10-A35A-EDB3404C6F81}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RepositoryContract", "RepositoryContract\RepositoryContract.csproj", "{16DF6D57-927C-457E-9726-A3A7BBEF8DFF}"
 EndProject

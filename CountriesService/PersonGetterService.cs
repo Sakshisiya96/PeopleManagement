@@ -23,49 +23,20 @@ using System.Threading.Tasks;
 
 namespace CountriesService
 {
-    public class PersonService : IPersonService
+    public class PersonGetterService : IPersonGetterService
     {
         private readonly IPersonRepository _personsRespository;
       
-        private readonly ILogger<PersonService> _logger;
-        public PersonService(IPersonRepository personRepostory,ILogger<PersonService> logger)
+        private readonly ILogger<PersonGetterService> _logger;
+        public PersonGetterService(IPersonRepository personRepostory,ILogger<PersonGetterService> logger)
         {
             _personsRespository = personRepostory;
             _logger = logger;
            
       
         }
-        private async Task<PersonResponse> ConvertPersonToPersonResponse(Person person)
-        {
-            PersonResponse personR = person.ToPersonResponse();
-            personR.Country = person.Country?.CountryName;
-            return personR;
-        }
-        public async Task<PersonResponse> AddPerson(PersonAddRequest? request)
-        {
-           
-            if (request == null)
-            {
-                throw new ArgumentNullException(nameof(request));
-            }
-            //if (string.IsNullOrEmpty(request.PersonName))
-            //{
-            //    throw new ArgumentNullException("Person name cannot be blank");
-            //}
-            //Model validation
-            ValidationHelper.ModelValidation(request);
-            //convert dto to domain model
-            Person person = request.ToPerson();
-            person.PersonId = Guid.NewGuid();
-             await _personsRespository.AddPersons(person);
-           
-            // _db.sp_InsertPersons(person);
-            //convert Person object into PersonResponse type
-            //return ConvertPersonToPersonResponse(person);
-            return person.ToPersonResponse();
-        }
-
-        public async Task<List<PersonResponse>> GetAllPersons()
+       
+        public virtual async Task<List<PersonResponse>> GetAllPersons()
         {
             _logger.LogInformation("GetAllPersons of Persons Service");
             var person = await _personsRespository.GetAllPersons();
@@ -76,7 +47,7 @@ namespace CountriesService
             // .Select(temp => ToPersonResponses(temp)).ToList();//list of person return
         }
 
-        public async Task<PersonResponse> GetPersonByPersonId(Guid? personId)
+        public virtual async Task<PersonResponse> GetPersonByPersonId(Guid? personId)
         {
             if (personId == null)
             {
@@ -90,7 +61,7 @@ namespace CountriesService
             return personres.ToPersonResponse();
         }
 
-        public async Task<List<PersonResponse>> GetFilteredPerson(string searchBy, string? seacrhString)
+        public virtual async Task<List<PersonResponse>> GetFilteredPerson(string searchBy, string? seacrhString)
         {
             _logger.LogInformation("GetFilteredPerson of PersonService");
             List<Person> persons = searchBy switch {
@@ -125,130 +96,8 @@ namespace CountriesService
             };
             return persons.Select(temp=>temp.ToPersonResponse()).ToList();
         }
-        /// <summary>
-        /// Return sorted list of person
-        /// </summary>
-        /// <param name="allPersons"></param>
-        /// <param name="sortBy"></param>
-        /// <param name="SortOrder"></param>
-        /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
-        public async Task<List<PersonResponse>> GetSortedPersons(List<PersonResponse> allPersons, string sortBy, SeacrhOrderOption SortOrder)
-        {
-            _logger.LogInformation("GetSortedPerson of Person Service");
-            if (string.IsNullOrEmpty(sortBy))
-                return allPersons;
-            List<PersonResponse> sortedPerson = (sortBy, SortOrder)
-            switch
-            {
-                (nameof(PersonResponse.PersonName), SeacrhOrderOption.ASC)
-                => allPersons.OrderBy(temp => temp.PersonName, StringComparer.OrdinalIgnoreCase).ToList(),
 
-                (nameof(PersonResponse.PersonName), SeacrhOrderOption.DESC)
-               => allPersons.OrderBy(temp => temp.PersonName, StringComparer.OrdinalIgnoreCase).ToList(),
-
-                (nameof(PersonResponse.Email), SeacrhOrderOption.DESC)
-                => allPersons.OrderBy(temp => temp.Email, StringComparer.OrdinalIgnoreCase).ToList(),
-
-                (nameof(PersonResponse.Email), SeacrhOrderOption.ASC)
-                => allPersons.OrderBy(temp => temp.Email, StringComparer.OrdinalIgnoreCase).ToList(),
-
-
-                (nameof(PersonResponse.DateOfBirth), SeacrhOrderOption.ASC)
-                => allPersons.OrderBy(temp => temp.DateOfBirth).ToList(),
-
-
-                (nameof(PersonResponse.DateOfBirth), SeacrhOrderOption.DESC)
-                => allPersons.OrderBy(temp => temp.DateOfBirth).ToList(),
-
-                (nameof(PersonResponse.Age), SeacrhOrderOption.ASC)
-                => allPersons.OrderBy(temp => temp.Age).ToList(),
-
-
-                (nameof(PersonResponse.Age), SeacrhOrderOption.DESC)
-                => allPersons.OrderBy(temp => temp.Age).ToList(),
-
-                (nameof(PersonResponse.Gender), SeacrhOrderOption.ASC)
-                => allPersons.OrderBy(temp => temp.Gender).ToList(),
-
-
-                (nameof(PersonResponse.Gender), SeacrhOrderOption.DESC)
-                => allPersons.OrderBy(temp => temp.Gender).ToList(),
-
-                (nameof(PersonResponse.Country), SeacrhOrderOption.ASC)
-                => allPersons.OrderBy(temp => temp.Country).ToList(),
-
-
-                (nameof(PersonResponse.Country), SeacrhOrderOption.DESC)
-                => allPersons.OrderBy(temp => temp.Country, StringComparer.OrdinalIgnoreCase).ToList(),
-
-                (nameof(PersonResponse.Address), SeacrhOrderOption.ASC)
-                => allPersons.OrderBy(temp => temp.Address, StringComparer.OrdinalIgnoreCase).ToList(),
-
-
-                (nameof(PersonResponse.Address), SeacrhOrderOption.DESC)
-                => allPersons.OrderBy(temp => temp.Address, StringComparer.OrdinalIgnoreCase).ToList(),
-
-                (nameof(PersonResponse.RecieveNewsLetters), SeacrhOrderOption.ASC)
-                => allPersons.OrderBy(temp => temp.RecieveNewsLetters).ToList(),
-
-
-                (nameof(PersonResponse.RecieveNewsLetters), SeacrhOrderOption.DESC)
-                => allPersons.OrderBy(temp => temp.RecieveNewsLetters).ToList(),
-
-                _ => allPersons
-
-            };
-            return sortedPerson;
-
-        }
-
-        public async Task<PersonResponse> UpdatePerson(PersonUpdateRequest? request)
-        {
-            if (request == null)
-            {
-                throw new ArgumentNullException(nameof(request));
-            }
-
-            ValidationHelper.ModelValidation(request);
-
-            //get matching person object to update
-            Person? matchingPerson = await _personsRespository.GetPersonByPersonId(request.PersonId);
-            if (matchingPerson == null)
-            {
-                throw new InvalidPersonIdException("Given person id is not exists");
-            }
-            matchingPerson.PersonName = request.PersonName;
-            matchingPerson.Gender = request.Gender.ToString();
-            matchingPerson.Address = request.Address;
-            matchingPerson.DateOfBirth = request.DateOfBirth;
-            matchingPerson.Email = request.Email;
-            matchingPerson.CountryId = request.CountryId;
-            matchingPerson.RecieveNewsLetters = request.RecieveNewsLetters;
-            await _personsRespository.UpdatePerson(matchingPerson);
-           
-            return matchingPerson.ToPersonResponse();
-
-        }
-
-        public async Task<bool> DeletePerson(Guid? personId)
-        {
-            if (personId == null)
-            {
-                throw new ArgumentNullException(nameof(personId));
-            }
-            Person? personResponse = await _personsRespository.GetPersonByPersonId(personId.Value);
-            if (personResponse == null)
-            {
-                return false; ;
-            }
-            await _personsRespository.DeletePersonByPersonId(personId);
-            
-            return true;
-
-        }
-
-        public async Task<MemoryStream> GetPersonsCSV()
+        public virtual async Task<MemoryStream> GetPersonsCSV()
         {
              MemoryStream memoryStream=new MemoryStream();
             StreamWriter streamWriter=new StreamWriter(memoryStream);
@@ -287,7 +136,7 @@ namespace CountriesService
 
         }
 
-        public async Task<MemoryStream> GetPersonExcel()
+        public virtual async Task<MemoryStream> GetPersonExcel()
         {
             MemoryStream memoryStream = new MemoryStream();//any type of file data csv,excel,image files
             using (ExcelPackage package = new ExcelPackage(memoryStream))//create a worksheet or workbook we use ExcelPackage

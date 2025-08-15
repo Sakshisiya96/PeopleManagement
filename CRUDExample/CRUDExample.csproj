@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\CountriesService\CountriesService.csproj" />
+    <ProjectReference Include="..\CountriesService\Services.csproj" />
     <ProjectReference Include="..\Entity\Entity.csproj" />
     <ProjectReference Include="..\Exceptions\Exceptions.csproj" />
     <ProjectReference Include="..\RepositoryContract\RepositoryContract.csproj" />

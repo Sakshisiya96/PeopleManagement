@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Repository;
 using RepositoryContract;
 using ServiceContract;
+using Services;
 
 namespace CRUDExample.StartupExtension
 {
@@ -27,7 +28,13 @@ namespace CRUDExample.StartupExtension
             service.AddScoped<ICountryRepository, CountryRepository>();
             service.AddScoped<IPersonRepository, PersonRepository>();
             service.AddScoped<ICountriesService, CountriesServiceM>();
-            service.AddScoped<IPersonService, PersonService>();
+            service.AddScoped<IPersonGetterService, PersonsGetterServiceWIthFewChange>();
+           // service.AddScoped<IPersonGetterService, PersonGetterServiceChild>();//LSP voilation
+            service.AddScoped<PersonGetterService, PersonGetterService>();
+            service.AddScoped<IPersonDeleteService, PersonDeleterService>();
+            service.AddScoped<IPersonAdderService, PersonAdderService>();
+            service.AddScoped<IPersonSortedService, PersonSorterService>();
+            service.AddScoped<IPersonUpdaterService, PersonUpdaterService>();
             service.AddDbContext<ApplicationDbContext>(options => {
                 options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"));//scoped service
             });
