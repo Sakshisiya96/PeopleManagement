@@ -83,12 +83,6 @@ namespace CountriesService
                 )
                 ),
 
-                nameof(PersonResponse.Age) =>
-                    await _personsRespository.GetFilteredPerson(x =>
-                        x.DateOfBirth.HasValue &&
-                        ((int)((DateTime.Now - x.DateOfBirth.Value).TotalDays / 365.25)).ToString().Contains(seacrhString)
-                    ),
-
                 nameof(PersonResponse.Gender) =>
                 await _personsRespository.GetFilteredPerson(x =>
                 x.Gender.Contains(seacrhString)),
